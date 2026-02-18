@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const projets = [
   { nom: "Portfolio", url: "/portfolio", icon: <FaFolderOpen size={40} /> },
   { nom: "En construction", url: "/pokemon", icon: <FaTools size={40} className="animate-bounce" /> },
-  { nom: "En construction", url: "#", icon: <FaCog size={40} className="slow-spin" /> },
+  { nom: "En construction", url: "/scp", icon: <FaCog size={40} className="slow-spin" /> },
   { nom: "En construction", url: "#", icon: <FaHardHat size={40} className="animate-pulse" /> },
 ];
 
