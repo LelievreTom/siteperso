@@ -9,13 +9,23 @@ export default function Foundation() {
   const logoRef = useRef(null);
   const navigate = useNavigate();
 
+  const series = [
+    { label: "I", start: 1, end: 999 },
+    { label: "II", start: 1000, end: 1999 },
+    { label: "III", start: 2000, end: 2999 },
+    { label: "IV", start: 3000, end: 3999 },
+    { label: "V", start: 4000, end: 4999 },
+    { label: "VI", start: 5000, end: 5999 },
+    { label: "VII", start: 6000, end: 6999 },
+    { label: "VIII", start: 7000, end: 7999 },
+    { label: "IX", start: 8000, end: 8999 },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-100 relative">
-      {/* Bloc SCP agrandi avec dégradé */}
+    <div className="min-h-screen bg-gray-100">
+      {/* HEADER */}
       <div className="w-full h-32 bg-gradient-to-r from-black to-red-900 flex items-center justify-between px-8 shadow-md">
-        {/* Partie gauche : logo + texte */}
         <div className="flex items-center space-x-4">
-          {/* Logo */}
           <img src={redScpLogo} alt="Logo SCP" className="h-20 w-20" />
           <div className="flex flex-col">
             <span className="text-white font-bold text-2xl">Fondation SCP</span>
@@ -24,99 +34,109 @@ export default function Foundation() {
             </span>
           </div>
         </div>
-        {/* Partie droite : bouton */}
+
         <button className="bg-black border border-gray-400 text-white font-medium px-6 py-3 mr-12 rounded-lg text-lg hover:border-white transition">
           Rechercher
         </button>
       </div>
 
-      {/* Contenu principal */}
-      <main className="pt-12 px-6 md:px-24 lg:px-32">
-        {/* Section avertissement */}
-        <section className="relative flex items-center justify-center text-center mb-20">
-          {/* Logo animé */}
-          <motion.img
-            ref={logoRef}
-            src={scpLogo}
-            alt="SCP Logo"
-            className="absolute w-64 h-64 opacity-10 pointer-events-none"
-            animate={{
-              x: hovered ? 20 : 0,
-              y: hovered ? -20 : 0,
-              rotate: hovered ? 10 : 0,
-            }}
-            transition={{ type: "spring", stiffness: 100, damping: 10 }}
-          />
+      {/* CONTENU PRINCIPAL */}
+      <main className="pt-12 px-6 md:px-16 lg:px-24 flex gap-10">
+        
+        {/* SIDEBAR SERIES */}
+        <aside className="w-52 h-fit bg-white border border-red-700 text-red-700 p-4 rounded shadow-sm hidden lg:block self-start">
+          <h2 className="text-lg font-bold mb-3 border-b border-red-700 pb-1">
+            Séries SCP
+          </h2>
 
-          {/* Message */}
-          <div
-            className="relative z-10 text-black max-w-3xl px-4 py-8 flex items-center justify-center group"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+          <div className="flex flex-col gap-1 text-sm">
+            {series.map((serie, index) => (
+              <button
+                key={index}
+                onClick={() => navigate(`/serie/${serie.start}-${serie.end}`)}
+                className="text-left hover:text-black transition"
+              >
+                {serie.label} (
+                {String(serie.start).padStart(3, "0")}–
+                {String(serie.end).padStart(3, "0")})
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* CONTENU */}
+        <div className="flex-1">
+
+          {/* AVERTISSEMENT */}
+          <section className="relative flex items-center justify-center text-center mb-20">
+            <motion.img
+              ref={logoRef}
+              src={scpLogo}
+              alt="SCP Logo"
+              className="absolute w-64 h-64 opacity-10 pointer-events-none"
+              animate={{
+                x: hovered ? 20 : 0,
+                y: hovered ? -20 : 0,
+                rotate: hovered ? 10 : 0,
+              }}
+              transition={{ type: "spring", stiffness: 100, damping: 10 }}
+            />
+
+            <div
+              className="relative z-10 text-black max-w-3xl px-4 py-8 flex items-center justify-center"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
             >
-            {/* Barre gauche */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-800"></div>
-            {/* Barre droite */}
-            <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-800"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-800"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-800"></div>
 
-            <p className="text-lg font-bold leading-relaxed">
+              <p className="text-lg font-bold leading-relaxed">
                 ATTENTION : LA BASE DE DONNÉES DE LA FONDATION EST <br />
                 CLASSIFIÉE <br />
                 L’ACCÈS AU PERSONNEL NON AUTORISÉ EST STRICTEMENT INTERDIT <br />
                 LES CONTREVENANTS SERONT TRAQUÉS, ARRÊTÉS ET EMPRISONNÉS
-            </p>
+              </p>
+            </div>
+          </section>
+
+          {/* NEWS */}
+          <section className="flex flex-col md:flex-row gap-12 justify-center mb-20">
+            {/* Traductions */}
+            <div className="bg-yellow-100/30 rounded shadow-md overflow-hidden w-[350px] h-[300px]">
+              <div className="flex justify-between items-center bg-red-800 text-white px-4 py-2">
+                <h2 className="text-lg font-bold">Dernières traductions</h2>
+                <button
+                  className="text-sm underline hover:text-gray-200"
+                  onClick={() => navigate("/traductions-news")}
+                >
+                  Voir
+                </button>
+              </div>
+
+              <div className="p-6">
+                <p>Aucune traduction ajoutée.</p>
+              </div>
             </div>
 
-        </section>
+            {/* Nouveaux SCP */}
+            <div className="bg-yellow-100/30 rounded shadow-md overflow-hidden w-[350px] h-[300px]">
+              <div className="flex justify-between items-center bg-red-800 text-white px-4 py-2">
+                <h2 className="text-lg font-bold">Dernier SCP ajouté</h2>
+                <button
+                  className="text-sm underline hover:text-gray-200"
+                  onClick={() => navigate("/scp-news")}
+                >
+                  Voir
+                </button>
+              </div>
 
-        {/* Section nouveautés */}
-        <section className="flex flex-col md:flex-row justify-center gap-12">
-        {/* Nouvelles traductions */}
-        <div
-            className="bg-yellow-100/30 rounded shadow-md overflow-hidden w-[350px] lg:w-[400px] h-[300px]" >
-            {/* Mini-header */}
-            <div className="flex justify-between items-center bg-red-800 text-white px-4 py-2">
-            <h2 className="text-lg font-bold">Dernières traductions</h2>
-            <button
-                className="text-sm underline hover:text-gray-200"
-                onClick={() => navigate("/traductions-news")} // mettre la route correspondante
-            >
-                Dernières traductions
-            </button>
+              <div className="p-6">
+                <p>Aucune nouveauté.</p>
+              </div>
             </div>
+          </section>
 
-            {/* Contenu des news */}
-            <div className="p-6 overflow-y-auto h-[calc(100%-50px)]">
-            <ul className="space-y-2">
-                <p>Aucune traduction ajouté pour le moment !</p>
-            </ul>
-            </div>
-        </div>
-
-        {/* Nouveaux SCP */}
-        <div
-            className="bg-yellow-100/30 rounded shadow-md overflow-hidden w-[350px] lg:w-[400px] h-[300px]"
-        >
-            {/* Mini-header */}
-            <div className="flex justify-between items-center bg-red-800 text-white px-4 py-2">
-            <h2 className="text-lg font-bold">Dernier SCP ajouté</h2>
-            <button
-                className="text-sm underline hover:text-gray-200"
-                onClick={() => navigate("/scp-news")} // mettre la route correspondante
-            >
-                Dernières publications
-            </button>
-            </div>
-
-            {/* Contenu des news */}
-            <div className="p-6 overflow-y-auto h-[calc(100%-50px)]">
-            <ul className="space-y-2">
-                <p>Aucune nouveauté pour le moment !</p>
-            </ul>
-            </div>
-        </div>
-        </section>
-                {/* Section présentation de la Fondation */}
+           {/* Section présentation de la Fondation */}
         <section className="mt-20 flex justify-center">
           <div className="max-w-4xl bg-white/90 text-black rounded-lg shadow-lg p-8 text-center">
             <p className="leading-relaxed text-lg mb-4">
@@ -132,12 +152,12 @@ export default function Foundation() {
               La Fondation agit à échelle mondiale, hors des juridictions nationales, et reçoit un mandat des
               gouvernements pour identifier, contenir et sécuriser les objets, entités et phénomènes anormaux.
               Ces anomalies représentent une menace majeure pour la stabilité de notre monde, qu'il s'agisse de 
-              danger physique, psychologiques ou cognitifs.
+              dangers physiques, psychologiques ou cognitifs.
             </p>
             <p className="leading-relaxed text-lg mb-4">
               Votre rôle, en tant que membre du personnel, est de participer au maintien de la normalité afin que 
               l'humanité continue de vivre sans peur, sans doute ni méfiance. La fondation œuvre à préserver 
-              l'indépendance de l'espèce humaine contre toute influence d'orrigine extraterrestre, 
+              l'indépendance de l'espèce humaine contre toute influence d'origine extraterrestre, 
               extradimensionnelle ou extranormale.
             </p>
             <p className="leading-relaxed text-lg mb-4">
@@ -192,6 +212,7 @@ export default function Foundation() {
           </div>
         </section>
 
+        </div>
       </main>
     </div>
   );
