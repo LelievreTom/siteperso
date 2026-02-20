@@ -53,7 +53,7 @@ export default function Foundation() {
             {series.map((serie, index) => (
               <button
                 key={index}
-                onClick={() => navigate(`/serie/${serie.start}-${serie.end}`)}
+                onClick={() => navigate(`/scp/series/${serie.start}-${serie.end}`)}
                 className="text-left hover:text-black transition"
               >
                 {serie.label} (
