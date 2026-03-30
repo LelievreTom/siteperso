@@ -8,7 +8,7 @@ const columns = [
   ["Hoenn", "Sinnoh"],
   ["Unova", "Kalos", "Mega Evolutions"],
   ["Alola", "Unknown", "Galar", "Gigantamax"],
-  ["Hisui", "Paldea", "Paldea Expeditions"],
+  ["Hisui", "Paldea"],
 ];
 
 export default function PokemonPage() {
@@ -69,16 +69,6 @@ export default function PokemonPage() {
     }
   };
 
-  const getRandomHint = () => {
-    const hiddenIds = allDisplayedIds.filter(id => !revealed[id]);
-    if(hiddenIds.length === 0){
-      alert("Bravo, tu as tout trouvé !");
-      return;
-    }
-    const randomId = hiddenIds[Math.floor(Math.random() * hiddenIds.length)];
-    setHintId(randomId);
-  }
-
   const getCategoryByName = (name) =>
     categories.find(cat => cat.name === name && (selectedGens.includes(cat.gen) || !start));
 
@@ -90,27 +80,24 @@ export default function PokemonPage() {
   const totalPokemons = allDisplayedIds.length;
   const foundNormalCount = allDisplayedIds.filter(id => revealed[id]).length;
 
-/*
-  useEffect(() => {
-    if (!start) return;
+  const getRandomHint = () => {
+    const hiddenIds = allDisplayedIds.filter(id => !revealed[id]);
+    if(hiddenIds.length === 0){
+      alert("Bravo, tu as tout trouvé !");
+      return;
+    }
+    const randomId = hiddenIds[Math.floor(Math.random() * hiddenIds.length)];
+    setHintId(randomId);
+  }
 
-    const allIds = {};
-    pokemonsData.forEach((p) => {
-      allIds[p.id] = true;
-    });
-
-    setRevealed(allIds);
-  }, [start]);
-*/
-
+  // ÉCRAN DE CONFIGURATION (CLAIR)
   if (!start) {
     return (
-      <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-700 via-slate-900 to-black text-white flex flex-col items-center justify-center p-6">
-        <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 shadow-2xl max-w-4xl w-full">
-          <h1 className="text-4xl font-extrabold text-center mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center justify-center p-6">
+        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl max-w-4xl w-full text-center">
+          <h1 className="text-4xl font-extrabold mb-8 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Configuration du Pokédex
           </h1>
-          
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
             {categories.map((gen) => (
               <button
@@ -118,141 +105,119 @@ export default function PokemonPage() {
                 onClick={() => toggleGen(gen.gen)}
                 className={`transition-all duration-200 px-4 py-3 rounded-xl font-medium border ${
                   selectedGens.includes(gen.gen)
-                    ? "bg-purple-600 border-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.5)] scale-105"
-                    : "bg-slate-800/50 border-slate-600 hover:bg-slate-700 text-slate-300"
+                    ? "bg-indigo-600 border-indigo-400 text-white shadow-lg scale-105"
+                    : "bg-white border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-slate-600"
                 }`}
               >
                 {gen.name}
               </button>
             ))}
           </div>
-
-          <div className="flex justify-center">
-            <button
-              onClick={() => setStart(true)}
-              disabled={selectedGens.length === 0}
-              className="group relative px-12 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl font-bold text-xl shadow-lg hover:shadow-green-500/30 hover:scale-105 transition-all disabled:opacity-30 disabled:hover:scale-100"
-            >
-              Initialiser le Quiz
-            </button>
-          </div>
+          <button
+            onClick={() => setStart(true)}
+            disabled={selectedGens.length === 0}
+            className="px-12 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-bold text-xl shadow-lg hover:shadow-emerald-200 hover:scale-105 transition-all disabled:opacity-30 disabled:grayscale"
+          >
+            Initialiser le Quiz
+          </button>
         </div>
       </div>
     );
   }
+
+  // PAGE PRINCIPALE (CLAIR)
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8">
-      {/* Header */}
+      {/* Header collant */}
       <div className="sticky top-4 z-50 flex flex-col items-center gap-4 mb-12">
-        <div className="bg-white/80 backdrop-blur-lg shadow-xl border border-slate-200 px-8 py-4 rounded-3xl flex flex-col md:flex-row items-center gap-6 w-full max-w-2xl">
-          <div className="flex flex-col items-center md:items-start">
+        <div className="bg-white/80 backdrop-blur-lg shadow-xl border border-white/50 px-8 py-4 rounded-3xl flex flex-col md:flex-row items-center gap-6 w-full max-w-2xl">
+          <div className="flex flex-col items-center md:items-start shrink-0">
             <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Progression</span>
-            <span className="text-2xl font-black text-blue-600">
+            <span className="text-2xl font-black text-indigo-600">
               {foundNormalCount} <span className="text-slate-300 font-light">/</span> {totalPokemons}
             </span>
           </div>
-          
           <div className="flex-1 flex gap-2 w-full">
             <input
               type="text"
-              placeholder="Entrez un nom..."
+              placeholder="Nom du Pokémon..."
               value={search}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-5 py-3 rounded-2xl bg-slate-100 border-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800 placeholder:text-slate-400"
+              className="flex-1 px-5 py-3 rounded-2xl bg-slate-100 border border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 placeholder:text-slate-400"
             />
             <button
               onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition-colors shadow-lg shadow-blue-200"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold transition-colors shadow-md"
             >
-              OK
+              Valider
             </button>
           </div>
         </div>
       </div>
 
-      {/* Conteneur principal des catégories */}
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-start">
-          {displayCategories.map((cat) => (
-            <div 
-              key={cat.name} 
-              className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden h-fit transition-all hover:shadow-md"
-            >
-              {/* Header de la catégorie */}
-              <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-                <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                  {cat.name}
-                </h3>
-                <span className="text-[11px] bg-blue-100 text-blue-600 px-2.5 py-1 rounded-full font-black tracking-tighter">
-                  {cat.ids.filter(id => revealed[id]).length} / {cat.ids.length}
-                </span>
-              </div>
-              
-              {/* Grille de Pokémon à l'intérieur */}
-              <div className="p-5 grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 justify-center">
-                {cat.ids.map((pokedexId) => {
-                  const found = pokemonsData.find(p => p.id === pokedexId);
-                  const isRevealed = revealed[pokedexId];
-                  
-                  // Logique de Sprite (Mega / Gmax / Normal)
-                  let spriteSrc = Ball;
-                  if(isRevealed && found){
-                    if(cat.gen === "gmax") spriteSrc = found.sprites.gmax?.regular || found.sprites.regular;
-                    else if(cat.gen === "mega") spriteSrc = found.mega ? found.mega[megaIndex[pokedexId] ?? 0]?.sprites.regular : found.sprites.regular;
-                    else spriteSrc = found.sprites.regular;
-                  }
-
-                  return (
-                    <div 
-                      key={pokedexId} 
-                      className={`group relative aspect-square flex items-center justify-center rounded-xl transition-all duration-300 ${
-                        isRevealed ? "bg-blue-50/50" : "bg-slate-100/50 opacity-40"
-                      }`}
-                      title={isRevealed && found ? found.name : `Pokémon #${pokedexId}`}
-                    >
-                      <img 
-                        src={spriteSrc} 
-                        alt="pokemon" 
-                        className={`w-full h-full p-1 object-contain transition-transform duration-500 ${isRevealed ? "scale-110 rotate-0" : "grayscale sepia"}`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Barre d'aide */}
-      <div className="mt-12 flex flex-col items-center gap-6 border-t border-slate-200 pt-8">
-        <h4 className="text-slate-400 font-bold uppercase tracking-widest text-xs">Outils d'aide</h4>
-        
-        <div className="flex flex-wrap justify-center gap-4">
-          {/* Bouton Ombre Aléatoire */}
-          <button
-            onClick={getRandomHint}
-            className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all text-slate-700 font-medium group"
-          >
-            <span className="text-xl group-hover:rotate-12 transition-transform">❓</span>
-            Afficher une ombre
-          </button>
+      {/* Grille de 5 colonnes */}
+      <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start">
+        {columns.map((col, colIdx) => {
+          const visibleCats = col.map(name => getCategoryByName(name)).filter(Boolean);
           
-          {/* Tu pourras ajouter d'autres boutons ici plus tard */}
-        </div>
+          return (
+            <div key={colIdx} className="flex flex-col gap-4">
+              {visibleCats.map((cat) => (
+                <div key={cat.name} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm h-fit">
+                  <div className="bg-slate-50 px-4 py-2 border-b border-slate-100">
+                    <h3 className="font-bold text-slate-500 text-xs text-center uppercase tracking-widest">
+                      {cat.name}
+                    </h3>
+                  </div>
+                  
+                  <div className="p-3 grid grid-cols-10 gap-1 justify-center">
+                    {cat.ids.map((pokedexId) => {
+                      const found = pokemonsData.find(p => p.id === pokedexId);
+                      const isRevealed = revealed[pokedexId];
+                      
+                      let spriteSrc = Ball;
+                      if(isRevealed && found){
+                        if(cat.gen === "gmax") spriteSrc = found.sprites.gmax?.regular || found.sprites.regular;
+                        else if(cat.gen === "mega") spriteSrc = found.mega ? found.mega[megaIndex[pokedexId] ?? 0]?.sprites.regular : found.sprites.regular;
+                        else spriteSrc = found.sprites.regular;
+                      }
 
-        {/* Affichage de l'ombre si un indice est actif */}
-        {hintId && !revealed[hintId] && (
-          <div className="flex flex-col items-center animate-bounce">
-            <div className="bg-white p-4 rounded-full shadow-xl border-2 border-blue-100">
-              <img 
-                src={pokemonsData.find(p => p.id === hintId)?.sprites.regular} 
-                alt="Indice"
-                className="w-20 h-20 object-contain brightness-0" // L'ombre est créée ici
-              />
+                      return (
+                        <div key={pokedexId} className="w-5 h-5 flex items-center justify-center">
+                          <img 
+                            src={spriteSrc} 
+                            alt="pkmn" 
+                            title={isRevealed && found ? found.name : `???`}
+                            className={`w-full h-full object-contain transition-all duration-300 ${isRevealed ? "scale-110" : "opacity-10 grayscale brightness-0"}`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="text-slate-400 text-sm mt-2 font-medium">Qui est-ce ?</p>
+          );
+        })}
+      </div>
+
+      {/* Footer Assistance */}
+      <div className="mt-20 flex flex-col items-center gap-6 pb-12">
+        <button
+          onClick={getRandomHint}
+          className="flex items-center gap-3 px-8 py-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700 shadow-md"
+        >
+          <span className="text-indigo-500">❓</span> Indices Silhouettes
+        </button>
+
+        {hintId && !revealed[hintId] && (
+          <div className="flex flex-col items-center animate-bounce bg-white p-6 rounded-3xl border border-indigo-100 shadow-xl">
+            <img 
+              src={pokemonsData.find(p => p.id === hintId)?.sprites.regular} 
+              className="w-20 h-20 object-contain brightness-0 opacity-20" 
+              alt="Indice"
+            />
           </div>
         )}
       </div>
