@@ -58,6 +58,12 @@ export default function ProjectsSection() {
         img: null, 
         status: "construction" 
       },
+      {
+        title: "Jeu Pokémon",
+        desc: "Un jeu pokémon inspiré d'un site existant, l'objectif est de choisir une ou plusieurs catégorie et d'entrer tous les pokémons existant de ces catégories.",
+        link: "https://tomlelievre.fr/pokemon",
+        img: null
+      }
     ],
 
     stage: [
