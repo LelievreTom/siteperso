@@ -171,63 +171,59 @@ export default function PokemonPage() {
         </div>
       </div>
 
-      {/* Grille de colonnes */}
-      <div className="flex flex-wrap justify-center gap-6">
-        {columns.map((col, colIdx) => (
-          <div key={colIdx} className="flex flex-col gap-6 w-full md:w-[320px]">
-            {col.map((catName) => {
-              const cat = getCategoryByName(catName);
-              if (!cat) return null;
-
-              return (
-                <div key={cat.name} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="font-bold text-slate-700">{cat.name}</h3>
-                    <span className="text-[10px] bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full font-bold">
-                       {cat.ids.length} PKMN
-                    </span>
-                  </div>
+      {/* Conteneur principal des catégories */}
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-start">
+          {displayCategories.map((cat) => (
+            <div 
+              key={cat.name} 
+              className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden h-fit transition-all hover:shadow-md"
+            >
+              {/* Header de la catégorie */}
+              <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                  {cat.name}
+                </h3>
+                <span className="text-[11px] bg-blue-100 text-blue-600 px-2.5 py-1 rounded-full font-black tracking-tighter">
+                  {cat.ids.filter(id => revealed[id]).length} / {cat.ids.length}
+                </span>
+              </div>
+              
+              {/* Grille de Pokémon à l'intérieur */}
+              <div className="p-5 grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 justify-center">
+                {cat.ids.map((pokedexId) => {
+                  const found = pokemonsData.find(p => p.id === pokedexId);
+                  const isRevealed = revealed[pokedexId];
                   
-                  <div className="p-4 grid grid-cols-8 gap-1.5 justify-center">
-                    {cat.ids.map((pokedexId) => {
-                      const found = pokemonsData.find(p => p.id === pokedexId);
-                      const isRevealed = revealed[pokedexId];
-                      
-                      let spriteSrc = Ball;
-                      if(isRevealed && found){
-                        if(cat.gen === "gmax"){
-                          spriteSrc = found.sprites.gmax?.regular || found.sprites.regular;
-                        } else if(cat.gen === "mega"){
-                          spriteSrc = found.mega 
-                            ? found.mega[megaIndex[pokedexId] ?? 0]?.sprites.regular || found.sprites.regular 
-                            : found.sprites.regular; 
-                        } else {
-                          spriteSrc = found.sprites.regular;
-                        }
-                      }
+                  // Logique de Sprite (Mega / Gmax / Normal)
+                  let spriteSrc = Ball;
+                  if(isRevealed && found){
+                    if(cat.gen === "gmax") spriteSrc = found.sprites.gmax?.regular || found.sprites.regular;
+                    else if(cat.gen === "mega") spriteSrc = found.mega ? found.mega[megaIndex[pokedexId] ?? 0]?.sprites.regular : found.sprites.regular;
+                    else spriteSrc = found.sprites.regular;
+                  }
 
-                      return (
-                        <div 
-                          key={pokedexId} 
-                          className={`group relative w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ${
-                            isRevealed ? "bg-blue-50" : "bg-slate-100 opacity-40 hover:opacity-100"
-                          }`}
-                          title={isRevealed && found ? found.name : "???"}
-                        >
-                          <img 
-                            src={spriteSrc} 
-                            alt={found?.name} 
-                            className={`w-7 h-7 object-contain transition-transform ${isRevealed ? "scale-110" : "grayscale"}`}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                  return (
+                    <div 
+                      key={pokedexId} 
+                      className={`group relative aspect-square flex items-center justify-center rounded-xl transition-all duration-300 ${
+                        isRevealed ? "bg-blue-50/50" : "bg-slate-100/50 opacity-40"
+                      }`}
+                      title={isRevealed && found ? found.name : `Pokémon #${pokedexId}`}
+                    >
+                      <img 
+                        src={spriteSrc} 
+                        alt="pokemon" 
+                        className={`w-full h-full p-1 object-contain transition-transform duration-500 ${isRevealed ? "scale-110 rotate-0" : "grayscale sepia"}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       {/* Barre d'aide */}
       <div className="mt-12 flex flex-col items-center gap-6 border-t border-slate-200 pt-8">
