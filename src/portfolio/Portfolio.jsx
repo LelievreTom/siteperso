@@ -28,7 +28,7 @@ export default function Portfolio() {
 
       {/* Header */}
       <header className="relative z-10 p-6 flex justify-between items-center backdrop-blur-sm">
-        <h1 className="text-2xl font-bold tracking-wide">✨ Tom Lelievre</h1>
+        <h1 className="text-2xl font-bold tracking-wide">Tom Lelievre</h1>
         <nav className="flex gap-6 items-center">
           <a href="#skills" className="hover:text-purple-400 transition">Compétences</a>
           <a href="#projects" className="hover:text-purple-400 transition">Projets</a>
@@ -48,7 +48,7 @@ export default function Portfolio() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          Bienvenue sur mon Portfolio 🚀
+          Bienvenue sur mon Portfolio
         </motion.h2>
 
         {/* Photo de profil */}
@@ -75,7 +75,7 @@ export default function Portfolio() {
           je suis actuellement à la recherche d’un 
           <span className="text-green-400 font-semibold"> stage</span> afin de valider mon année, 
           sur une période allant du 
-          <span className="text-green-400 font-semibold"> 16 mars au 3 juillet</span> 🚀.
+          <span className="text-green-400 font-semibold"> 16 mars au 3 juillet</span>.
         </motion.p>
       </section>
 
