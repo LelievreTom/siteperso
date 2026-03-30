@@ -6,6 +6,8 @@ import projet2 from "../assets/projet2.png";
 import projet3 from "../assets/projet3.png";
 import projet4 from "../assets/projet4.png";
 import projet5 from "../assets/projet5.png";
+
+import pokemon from "../assets/pokemon.png";
 import casadiusole from "../assets/projet6.png";
 
 export default function ProjectsSection() {
@@ -62,7 +64,7 @@ export default function ProjectsSection() {
         title: "Jeu Pokémon",
         desc: "Un jeu pokémon inspiré d'un site existant, l'objectif est de choisir une ou plusieurs catégorie et d'entrer tous les pokémons existant de ces catégories.",
         link: "https://tomlelievre.fr/pokemon",
-        img: null
+        img: pokemon
       }
     ],
 
