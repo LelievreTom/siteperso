@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Ball from "../assets/ball.png";
 import pokemonsData from "./data/pokemons.json";
+//import pokemonsData from "../../public/pokemons.json";
 import categories from "./data/categories";
 
 const columns = [

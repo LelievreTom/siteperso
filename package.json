@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "generate-pokemon": "node src/pokemon/generate-pokemon-json.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
