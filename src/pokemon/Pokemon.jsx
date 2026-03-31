@@ -156,13 +156,15 @@ export default function PokemonPage() {
         </div>
       </div>
 
-      {/* Grille de 5 colonnes */}
-      <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start">
+            {/* Grille de 5 colonnes */}
+            <div className="max-w-[1600px] mx-auto flex flex-wrap justify-center gap-6 items-start">
         {columns.map((col, colIdx) => {
-          const visibleCats = col.map(name => getCategoryByName(name)).filter(Boolean);
+          const visibleCats = col
+            .map(name => getCategoryByName(name))
+            .filter(Boolean);
           
-          return (
-            <div key={colIdx} className="flex flex-col gap-4">
+          return visibleCats.length > 0 ? (
+            <div key={colIdx} className="flex flex-col gap-4 w-full md:w-[300px]">
               {visibleCats.map((cat) => (
                 <div key={cat.name} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm h-fit">
                   <div className="bg-slate-50 px-4 py-2 border-b border-slate-100">
@@ -198,7 +200,7 @@ export default function PokemonPage() {
                 </div>
               ))}
             </div>
-          );
+          ) : null;
         })}
       </div>
 
