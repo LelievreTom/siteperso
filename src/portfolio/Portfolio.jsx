@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaReact, FaGithub, FaPaintBrush, FaChartBar, FaEnvelope, FaJava, FaPython, FaHtml5, FaCss3, FaDownload } from "react-icons/fa";
 import { SiKotlin, SiMongodb, SiSpring, SiAngular } from "react-icons/si";
@@ -60,11 +61,11 @@ export default function Portfolio() {
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 px-6 flex justify-between items-center ${isScrolled ? "bg-gray-900/80 backdrop-blur-lg shadow-2xl py-3" : "bg-transparent py-6"
           }`}
       >
-        <a href="#home">
+        <Link to="/">
           <h1 className="text-2xl font-bold tracking-wide hover:text-purple-400 transition cursor-pointer">
             Tom Lelievre
           </h1>
-        </a>
+        </Link>
         <nav className="flex gap-8 items-center">
           {navLinks.map((link) => (
             <a
