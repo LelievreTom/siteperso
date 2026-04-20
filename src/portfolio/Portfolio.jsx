@@ -48,30 +48,13 @@ export default function Portfolio() {
   }, []);
 
   const navLinks = [
-    { id: "skills", label: "Compétences" },
     { id: "projects", label: "Projets" },
+    { id: "skills", label: "Compétences" },
     { id: "contact", label: "Contact" },
   ];
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white overflow-x-hidden">
-      {/* Fond animé */}
-      <div className="fixed inset-0 pointer-events-none">
-        {[...Array(40)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-70"
-            initial={{ y: Math.random() * 800, x: Math.random() * 1200 }}
-            animate={{ y: ["0%", "100%"], opacity: [0.7, 0.2, 0.7] }}
-            transition={{
-              duration: 10 + Math.random() * 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
-
       {/* Header */}
       <header
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 px-6 flex justify-between items-center ${isScrolled ? "bg-gray-900/80 backdrop-blur-lg shadow-2xl py-3" : "bg-transparent py-6"
