@@ -1,9 +1,9 @@
-import { FaFolderOpen, FaTools, FaCog, FaHardHat } from "react-icons/fa";
+import { FaFolderOpen, FaTools, FaCog, FaHardHat, FaGamepad } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const projets = [
   { nom: "Portfolio", url: "/portfolio", icon: <FaFolderOpen size={40} /> },
-  { nom: "En construction", url: "/pokemon", icon: <FaTools size={40} className="animate-bounce" /> },
+  { nom: "Jeu Pokémon", url: "/pokemon", icon: <FaGamepad size={40} /> },
   { nom: "En construction", url: "/scp", icon: <FaCog size={40} className="slow-spin" /> },
   { nom: "En construction", url: "#", icon: <FaHardHat size={40} className="animate-pulse" /> },
 ];
