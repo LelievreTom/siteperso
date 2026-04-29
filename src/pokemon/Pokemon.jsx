@@ -17,7 +17,46 @@ export default function PokemonPage() {
   const [revealed, setRevealed] = useState({});
   const [search, setSearch] = useState("");
   const [megaIndex, setMegaIndex] = useState({});
-  const [hintId, setHintId] = useState(null);
+  const [hintId, setHintId] = useState(null); // Keep for old compatibility or remove? User wants a new system.
+  const [hintCharges, setHintCharges] = useState(5);
+  const [activeHintId, setActiveHintId] = useState(null);
+  const [passedIds, setPassedIds] = useState({});
+  const [lastMilestone, setLastMilestone] = useState(0);
+
+  useEffect(() => {
+    const currentFound = Object.keys(revealed).length;
+    if (currentFound > lastMilestone && Math.floor(currentFound / 10) > Math.floor(lastMilestone / 10)) {
+        setHintCharges(prev => prev + (Math.floor(currentFound / 10) - Math.floor(lastMilestone / 10)));
+        setLastMilestone(currentFound);
+    }
+  }, [revealed, lastMilestone]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "," && start && !activeHintId && hintCharges > 0) {
+        getRandomHint();
+        return;
+      }
+
+      // focus search input if typing letters/numbers
+      if (start && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1 && /[a-zA-Z0-9\s-]/.test(e.key)) {
+          const input = document.querySelector('input[placeholder="Nom du Pokémon..."]');
+          if (input) input.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [start, activeHintId, hintCharges]);
+
+  useEffect(() => {
+    if (activeHintId) {
+      // Focus the search input automatically when the hint appears
+      const input = document.querySelector('input[placeholder="Nom du Pokémon..."]');
+      if (input) input.focus();
+    }
+  }, [activeHintId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,8 +100,13 @@ export default function PokemonPage() {
         normalizeString(p.name_jp) === searchNorm
     );
     if (found) {
-      setRevealed((prev) => ({ ...prev, [found.id]: true }));
-      if(found.id === hintId) setHintId(null);
+      if (!revealed[found.id]) {
+        setRevealed((prev) => ({ ...prev, [found.id]: true }));
+        if (found.id === activeHintId) {
+          setHintCharges(prev => prev + 1); // Refund charge
+          setActiveHintId(null);
+        }
+      }
       setSearch("");
     } else {
       alert("Pokémon introuvable !");
@@ -81,14 +125,26 @@ export default function PokemonPage() {
   const foundNormalCount = allDisplayedIds.filter(id => revealed[id]).length;
 
   const getRandomHint = () => {
-    const hiddenIds = allDisplayedIds.filter(id => !revealed[id]);
+    if (hintCharges <= 0) {
+      alert("Tu as besoin de 10 Pokémon trouvés pour un point d'accès !");
+      return;
+    }
+    const hiddenIds = allDisplayedIds.filter(id => !revealed[id] && !passedIds[id]);
     if(hiddenIds.length === 0){
       alert("Bravo, tu as tout trouvé !");
       return;
     }
     const randomId = hiddenIds[Math.floor(Math.random() * hiddenIds.length)];
-    setHintId(randomId);
+    setActiveHintId(randomId);
+    setHintCharges(prev => prev - 1);
   }
+
+  const handlePass = () => {
+    if (activeHintId) {
+      setPassedIds(prev => ({ ...prev, [activeHintId]: true }));
+      setActiveHintId(null);
+    }
+  };
 
   // ÉCRAN DE CONFIGURATION (CLAIR)
   if (!start) {
@@ -177,12 +233,15 @@ export default function PokemonPage() {
                     {cat.ids.map((pokedexId) => {
                       const found = pokemonsData.find(p => p.id === pokedexId);
                       const isRevealed = revealed[pokedexId];
+                      const isPassed = passedIds[pokedexId];
                       
                       let spriteSrc = Ball;
                       if(isRevealed && found){
                         if(cat.gen === "gmax") spriteSrc = found.sprites.gmax?.regular || found.sprites.regular;
                         else if(cat.gen === "mega") spriteSrc = found.mega ? found.mega[megaIndex[pokedexId] ?? 0]?.sprites.regular : found.sprites.regular;
                         else spriteSrc = found.sprites.regular;
+                      } else if (isPassed && found) {
+                        spriteSrc = found.sprites.regular;
                       }
 
                       return (
@@ -191,7 +250,10 @@ export default function PokemonPage() {
                             src={spriteSrc} 
                             alt="pkmn" 
                             title={isRevealed && found ? found.name : `???`}
-                            className={`w-full h-full object-contain transition-all duration-300 ${isRevealed ? "scale-110" : "opacity-10 grayscale brightness-0"}`}
+                            className={`w-full h-full object-contain transition-all duration-300 
+                              ${isRevealed ? "scale-110" : 
+                                (isPassed ? "opacity-30 brightness-0 scale-100" : "opacity-10 grayscale brightness-0")
+                              }`}
                           />
                         </div>
                       );
@@ -208,18 +270,49 @@ export default function PokemonPage() {
       <div className="mt-20 flex flex-col items-center gap-6 pb-12">
         <button
           onClick={getRandomHint}
-          className="flex items-center gap-3 px-8 py-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700 shadow-md"
+          disabled={hintCharges <= 0}
+          className={`flex items-center gap-4 px-10 py-4 rounded-3xl transition-all font-black text-lg shadow-xl border-2 ${
+            hintCharges > 0 
+              ? "bg-white border-indigo-100 text-indigo-600 hover:scale-105 hover:bg-indigo-50" 
+              : "bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed"
+          }`}
         >
-          <span className="text-indigo-500">❓</span> Indices Silhouettes
+          <div className="flex flex-col items-start leading-none">
+            <span className="text-[10px] uppercase tracking-[0.2em] mb-1">Révélation</span>
+            <div className="flex items-center gap-2">
+              <span>{hintCharges} Ombre{hintCharges > 1 ? 's' : ''}</span>
+            </div>
+          </div>
         </button>
 
-        {hintId && !revealed[hintId] && (
-          <div className="flex flex-col items-center animate-bounce bg-white p-6 rounded-3xl border border-indigo-100 shadow-xl">
-            <img 
-              src={pokemonsData.find(p => p.id === hintId)?.sprites.regular} 
-              className="w-20 h-20 object-contain brightness-0 opacity-20" 
-              alt="Indice"
-            />
+        {/* Modal Bulle Indice */}
+        {activeHintId && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+            <div className="bg-white/95 backdrop-blur-2xl rounded-[40px] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.35)] p-10 flex flex-col items-center gap-8 max-w-sm w-full border border-white pointer-events-auto animate-in zoom-in-95 duration-300">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em]">Indice Actif</span>
+                <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">Qui est-ce ?</h2>
+              </div>
+              
+              <div className="relative group">
+                <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full scale-150 group-hover:scale-110 transition-transform duration-500"></div>
+                <img 
+                  src={pokemonsData.find(p => p.id === activeHintId)?.sprites.regular} 
+                  className="w-48 h-48 object-contain brightness-0 opacity-100 relative z-10 drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)]" 
+                  alt="Indice"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3 w-full">
+                <p className="text-center text-xs font-medium text-slate-400 mb-2 italic">Tu peux taper le nom directement !</p>
+                <button
+                  onClick={handlePass}
+                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-indigo-200"
+                >
+                  Passer (Affiche l'ombre)
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
