@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaTimes, FaExternalLinkAlt, FaImage, FaReact, FaJava, FaPython, 
-  FaHtml5, FaCss3, FaJs, FaNodeJs, FaPaintBrush 
-} from "react-icons/fa";
+import { FaTimes, FaExternalLinkAlt, FaReact, FaJava, FaPython, FaHtml5, FaCss3, FaNodeJs } from "react-icons/fa";
 import { SiTailwindcss, SiJavascript, SiSpring, SiMongodb, SiCplusplus, SiAngular } from "react-icons/si";
 import { DiPostgresql } from "react-icons/di";
+import SectionTitle from "./SectionTitle";
 
 import projet1 from "../assets/projet1.png";
 import projet2 from "../assets/projet2.png";
@@ -114,14 +112,15 @@ export default function ProjectsSection() {
       { 
         title: "Site SCP", 
         desc: "Un site web inspiré de l’univers de la Fondation SCP. Il reprend l’ambiance et la mise en page du site officiel, avec une expérience interactive autour des rapports d’anomalies.", 
-        img: null, 
+        link: "/scp",
+        img: null,
         status: "construction",
         tech: ["React", "Tailwind", "MongoDB"]
       },
       {
         title: "Jeu Pokémon",
         desc: "Un jeu pokémon inspiré d'un site existant, l'objectif est de choisir une ou plusieurs catégorie et d'entrer tous les pokémons existant de ces catégories.",
-        link: "https://tomlelievre.fr/pokemon",
+        link: "/pokemon",
         img: pokemon,
         tech: ["React", "Tailwind"]
       }
@@ -130,9 +129,8 @@ export default function ProjectsSection() {
     stage: [
       { 
         title: "Infotel", 
-        desc: "Stage de fin d'études en cours. Développement et maintenance d'applications au sein des équipes d'Infotel.", 
+        desc: "Stage de fin d'études (BUT Informatique). Développement et maintenance d'applications au sein des équipes d'Infotel.", 
         img: null,
-        status: "encours",
         tech: ["Spring", "Angular", "Python"]
       },
       { 
@@ -146,224 +144,152 @@ export default function ProjectsSection() {
   };
 
   return (
-      <section id="projects" className="relative z-50 p-12 text-center">
-        <h3 className="text-3xl font-bold mb-8">Projets</h3>
-  
-        {/* Onglets */}
-        <div className="flex justify-center gap-6 mb-8">
-          {["universitaire", "perso", "stage"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-full font-semibold transition ${
-                activeTab === tab
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "bg-white/10 text-gray-300 hover:bg-white/20"
-              }`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </div>
-  
-        {/* Liste des projets */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+    <section id="projects" className="py-16 scroll-mt-16">
+      <SectionTitle cmd={`ls ~/projets/${activeTab}`} />
+
+      {/* Onglets */}
+      <div className="flex flex-wrap gap-2 mb-8" role="tablist">
+        {["universitaire", "perso", "stage"].map((tab) => (
+          <button
+            key={tab}
+            role="tab"
+            aria-selected={activeTab === tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-1.5 rounded border transition ${
+              activeTab === tab
+                ? "border-term-green text-term-green bg-term-green/10"
+                : "border-term-line text-term-dim hover:text-term-text"
+            }`}
           >
-            {projects[activeTab].map((proj, idx) => (
-              <ProjectCard
-                key={idx}
-                title={proj.title}
-                desc={proj.desc}
-                img={proj.img}
-                status={proj.status}
-                link={proj.link}
-                tech={proj.tech}
-                techIcons={techIcons}
-                techLinks={techLinks}
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-      </section>
-    );
+            {tab}/
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {projects[activeTab].map((proj) => (
+            <ProjectCard key={proj.title} {...proj} techIcons={techIcons} />
+          ))}
+        </motion.div>
+      </AnimatePresence>
+    </section>
+  );
 }
 
-function ProjectCard({ title, desc, img, status, link, tech, techIcons, techLinks }) {
+const statusLabels = {
+  encours: <span className="text-term-green">[en cours]</span>,
+  construction: <span className="text-term-yellow">[wip]</span>,
+};
+
+// Lien interne (même site) ou externe
+const isExternal = (link) => link.startsWith("http");
+
+function ProjectCard({ title, desc, img, status, link, tech, techIcons }) {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const techList = (
+    <div className="flex flex-wrap gap-2">
+      {tech?.map((t) => (
+        <a
+          key={t}
+          href={techLinks[t]}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Documentation ${t}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-1.5 px-2 py-0.5 text-xs rounded border border-term-line hover:border-term-green transition"
+        >
+          {techIcons[t]} {t}
+        </a>
+      ))}
+    </div>
+  );
 
   return (
     <>
-      <div className="relative overflow-visible">
-        {/* Banderole si en construction ou en cours */}
-        {status && (
-          <div className="absolute top-1 -right-4 rotate-12 z-20">
-            <div className={`relative ${status === 'encours' ? 'bg-gradient-to-r from-green-400 to-emerald-600' : 'bg-gradient-to-r from-yellow-400 to-yellow-500'} text-black font-bold text-xs px-4 py-1 shadow-lg rounded-md overflow-hidden`}>
-              {status === 'encours' ? '🚀 En cours' : '🚧 En construction'}
-              {/* Effet ruban aux bords avec triangles */}
-              <div className={`absolute top-0 left-0 w-3 h-3 ${status === 'encours' ? 'bg-green-700' : 'bg-yellow-600'} clip-triangle-left`}></div>
-              <div className={`absolute bottom-0 right-0 w-3 h-3 ${status === 'encours' ? 'bg-green-700' : 'bg-yellow-600'} clip-triangle-right`}></div>
+      <button
+        onClick={() => setOpen(true)}
+        className="group text-left rounded-lg border border-term-line bg-term-panel hover:border-term-green transition overflow-hidden flex flex-col"
+      >
+        <div className="h-36 w-full border-b border-term-line bg-term-bg overflow-hidden">
+          {img ? (
+            <img src={img} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-term-dim text-xs">
+              {"// pas d'aperçu"}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        <motion.div
-          className="rounded-2xl bg-white/10 backdrop-blur-md shadow-lg hover:shadow-purple-500/30 transition cursor-pointer overflow-hidden flex flex-col h-full"
-          whileHover={{ scale: 1.05 }}
-          onClick={() => setOpen(true)}
-        >
-          {/* Image de la carte */}
-          <div className="h-44 w-full relative overflow-hidden bg-gray-800">
-            {img ? (
-              <img src={img} alt={title} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50 text-white/50">
-                <img 
-                  src={`https://picsum.photos/seed/${title.replace(/\s+/g, '')}/600/400`} 
-                  alt={title} 
-                  className="w-full h-full object-cover opacity-60"
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
-                  <FaImage size={30} className="mb-2 opacity-50" />
-                  <span className="text-xs font-semibold uppercase tracking-widest opacity-50">Projet</span>
-                </div>
-              </div>
-            )}
-            
-            {status === "construction" && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <span className="text-yellow-400 font-bold flex items-center gap-2">
-                  🚧 En construction
-                </span>
-              </div>
-            )}
+        <div className="p-4 flex flex-col gap-3 flex-grow">
+          <div className="flex justify-between items-baseline gap-2">
+            <h3 className="font-semibold text-white group-hover:text-term-green transition">{title}</h3>
+            {status && <span className="text-xs shrink-0">{statusLabels[status]}</span>}
           </div>
-
-          <div className="p-6 flex flex-col flex-grow">
-            {/* Tech badges en haut de la description */}
-            <div className="flex gap-2 mb-3">
-              {tech?.map((t) => (
-                <a 
-                  key={t} 
-                  href={techLinks[t]} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  title={`Documentation ${t}`} 
-                  className="text-xl hover:scale-120 transition-transform"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {techIcons[t]}
-                </a>
-              ))}
-            </div>
-            
-            <h4 className="text-xl font-semibold text-white mb-2">{title}</h4>
-            <p className="text-gray-300 text-sm line-clamp-3 mb-4">{desc}</p>
-            
-            <div className="mt-auto flex justify-between items-center">
-              <span className="text-purple-400 text-xs font-bold uppercase tracking-tighter cursor-pointer hover:underline">
-                En savoir plus →
-              </span>
-              {link && (
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition"
-                  onClick={(e) => e.stopPropagation()} 
-                >
-                  <FaExternalLinkAlt size={14} />
-                </a>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </div>
+          <p className="text-term-dim text-xs leading-relaxed line-clamp-3">{desc}</p>
+          <div className="mt-auto">{techList}</div>
+        </div>
+      </button>
 
       {/* Modal */}
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]"
-            style={{ position: "fixed" }} 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
+            onClick={() => setOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            >
+          >
             <motion.div
-                className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg max-w-lg w-full relative z-[10000]"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg border border-term-line bg-term-panel"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
             >
-
-              <button
-                onClick={() => setOpen(false)}
-                className="absolute top-4 right-4 z-[10001] bg-white text-black p-2 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center w-10 h-10 border-2 border-purple-500"
-              >
-                <FaTimes size={20} />
-              </button>
-
-              {img ? (
-                <img
-                  src={img}
-                  alt={title}
-                  className="w-full h-64 object-cover rounded-xl mb-6 shadow-lg border border-white/10"
-                />
-              ) : (
-                <div className="w-full h-64 overflow-hidden rounded-xl mb-6 relative bg-gray-800 border border-white/10 shadow-lg">
-                  <img 
-                    src={`https://picsum.photos/seed/${title.replace(/\s+/g, '')}/800/600`} 
-                    alt={title} 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-purple-600 rounded-lg shadow-lg">
-                        <FaImage className="text-white" size={24} />
-                      </div>
-                      <span className="text-sm font-medium text-white tracking-wide">Image de présentation</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <h4 className="text-2xl font-bold mb-2">{title}</h4>
-              
-              {/* Tech stack dans le modal */}
-              <div className="flex flex-wrap gap-3 mb-4">
-                {tech?.map((t) => (
-                  <a 
-                    key={t} 
-                    href={techLinks[t]} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all"
-                  >
-                    <span className="text-xl">{techIcons[t]}</span>
-                    <span className="text-xs font-medium text-gray-300">{t}</span>
-                  </a>
-                ))}
+              <div className="flex items-center justify-between px-4 py-2 border-b border-term-line text-xs text-term-dim">
+                <span>cat {title.toLowerCase().replace(/\s+/g, "_")}.md</span>
+                <button onClick={() => setOpen(false)} aria-label="Fermer" className="p-1 hover:text-term-red transition">
+                  <FaTimes size={16} />
+                </button>
               </div>
 
-              <p className="text-gray-300">{desc}</p>
-              {link && (
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-400 hover:underline mt-3 inline-block"
-                >
-                  🔗 Accéder au site
-                </a>
-              )}
+              <div className="p-6 space-y-4">
+                {img && <img src={img} alt={title} className="w-full h-56 object-cover rounded border border-term-line" />}
+                <h3 className="text-xl font-bold text-white">
+                  # {title} {status && <span className="text-sm font-normal">{statusLabels[status]}</span>}
+                </h3>
+                {techList}
+                <p className="leading-relaxed">{desc}</p>
+                {link && (
+                  <a
+                    href={link}
+                    {...(isExternal(link) && { target: "_blank", rel: "noopener noreferrer" })}
+                    className="inline-flex items-center gap-2 text-term-blue hover:underline"
+                  >
+                    → ouvrir le projet {isExternal(link) && <FaExternalLinkAlt size={12} />}
+                  </a>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

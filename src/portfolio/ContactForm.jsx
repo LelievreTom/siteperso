@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { FaEnvelope } from "react-icons/fa";
 import ReCAPTCHA from "react-google-recaptcha";
+import SectionTitle from "./SectionTitle";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -40,66 +40,45 @@ export default function ContactForm() {
         setStatus({ type: "error", message: data.message || "Erreur lors de l'envoi." });
         recaptchaRef.current.reset();
       }
-    } catch (error) {
+    } catch {
       setStatus({ type: "error", message: "Erreur réseau. Veuillez réessayer." });
       recaptchaRef.current.reset();
     }
   };
 
   return (
-    <section
-      id="contact"
-      className="relative p-12 text-center bg-white/5 backdrop-blur-md rounded-2xl mx-6 md:mx-20 my-8 shadow-lg"
-    >
-      <h3 className="text-3xl font-bold mb-8">Contactez-moi</h3>
+    <section id="contact" className="py-16 scroll-mt-16">
+      <SectionTitle cmd="./contact.sh" />
 
-      <form onSubmit={handleSubmit} className="max-w-xl mx-auto flex flex-col gap-6">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nom"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="p-4 rounded-xl border border-gray-400/30 bg-white/10 placeholder-gray-400 text-white focus:outline-none focus:border-purple-400 transition"
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="p-4 rounded-xl border border-gray-400/30 bg-white/10 placeholder-gray-400 text-white focus:outline-none focus:border-purple-400 transition"
-        />
-        <textarea
-          name="message"
-          placeholder="Votre message..."
-          value={formData.message}
-          onChange={handleChange}
-          required
-          rows={6}
-          className="p-4 rounded-xl border border-gray-400/30 bg-white/10 placeholder-gray-400 text-white focus:outline-none focus:border-purple-400 transition resize-none"
-        ></textarea>
+      <form onSubmit={handleSubmit} className="max-w-xl flex flex-col gap-5">
+        <label className="flex flex-col gap-1">
+          <span className="text-term-dim text-xs">--nom</span>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required autoComplete="name"
+            className="w-full px-3 py-2 rounded border border-term-line bg-term-bg text-white placeholder-term-dim focus:outline-none focus:border-term-green transition" />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-term-dim text-xs">--email</span>
+          <input type="email" name="email" value={formData.email} onChange={handleChange} required autoComplete="email"
+            className="w-full px-3 py-2 rounded border border-term-line bg-term-bg text-white placeholder-term-dim focus:outline-none focus:border-term-green transition" />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-term-dim text-xs">--message</span>
+          <textarea name="message" value={formData.message} onChange={handleChange} required rows={6}
+            className="w-full px-3 py-2 rounded border border-term-line bg-term-bg text-white placeholder-term-dim focus:outline-none focus:border-term-green transition resize-none" />
+        </label>
 
-        <div className="flex justify-center">
-          <ReCAPTCHA sitekey={SITE_KEY} ref={recaptchaRef} />
-        </div>
+        <ReCAPTCHA sitekey={SITE_KEY} ref={recaptchaRef} theme="dark" />
 
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg hover:scale-105 transition text-white font-semibold"
+          className="self-start px-5 py-2 rounded border border-term-green text-term-green hover:bg-term-green hover:text-term-bg transition font-semibold"
         >
-          <FaEnvelope /> Envoyer
+          $ envoyer
         </button>
 
         {status && (
-          <p
-            className={`mt-2 font-semibold ${
-              status.type === "success" ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {status.message}
+          <p role="status" className={status.type === "success" ? "text-term-green" : "text-term-red"}>
+            {status.type === "success" ? "✓ " : "✗ "}{status.message}
           </p>
         )}
       </form>
