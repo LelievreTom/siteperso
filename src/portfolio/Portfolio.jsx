@@ -1,149 +1,183 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaReact, FaGithub, FaPaintBrush, FaChartBar, FaEnvelope, FaJava, FaPython, FaHtml5, FaCss3, FaDownload } from "react-icons/fa";
-import { SiKotlin, SiMongodb, SiSpring } from "react-icons/si";
+import { FaReact, FaGithub, FaPaintBrush, FaChartBar, FaJava, FaPython, FaHtml5, FaCss3 } from "react-icons/fa";
+import { SiKotlin, SiMongodb, SiSpring, SiAngular } from "react-icons/si";
 import { DiPostgresql } from "react-icons/di";
 import ProjectsSection from "./Projects";
 import ContactForm from "./ContactForm";
+import SectionTitle from "./SectionTitle";
 import profilePicture from "../assets/profil.jpeg";
 
-export default function Portfolio() {
-  return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white overflow-hidden">
-      {/* Fond animé */}
-      <div className="absolute inset-0">
-        {[...Array(40)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-70"
-            initial={{ y: Math.random() * 800, x: Math.random() * 1200 }}
-            animate={{ y: ["0%", "100%"], opacity: [0.7, 0.2, 0.7] }}
-            transition={{
-              duration: 10 + Math.random() * 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+const hardSkills = [
+  { icon: <FaReact color="#61DBFB" />, name: "React", link: "https://react.dev" },
+  { icon: <FaPaintBrush />, name: "Tailwind CSS", link: "https://tailwindcss.com" },
+  { icon: <FaGithub />, name: "Git / GitHub", link: "https://github.com" },
+  { icon: <FaChartBar />, name: "Matomo", link: "https://matomo.org" },
+  { icon: <FaJava color="#f89820" />, name: "Java", link: "https://dev.java" },
+  { icon: <FaPython color="#3776AB" />, name: "Python", link: "https://www.python.org" },
+  { icon: <><FaHtml5 color="#E34F26" /><FaCss3 color="#1572B6" /></>, name: "HTML / CSS", link: "https://developer.mozilla.org/fr/docs/Web/HTML" },
+  { icon: <DiPostgresql color="#336791" />, name: "PostgreSQL", link: "https://www.postgresql.org" },
+  { icon: <SiKotlin color="#7F52FF" />, name: "Kotlin", link: "https://kotlinlang.org" },
+  { icon: <SiMongodb color="#47A248" />, name: "MongoDB", link: "https://www.mongodb.com" },
+  { icon: <SiSpring color="#6DB33F" />, name: "Spring", link: "https://spring.io" },
+  { icon: <SiAngular color="#DD0031" />, name: "Angular", link: "https://angular.io" },
+];
 
+const softSkills = ["Communication", "Travail en équipe", "Résolution de problèmes", "Gestion du temps"];
+
+const navLinks = [
+  { id: "projects", label: "projets" },
+  { id: "skills", label: "skills" },
+  { id: "contact", label: "contact" },
+];
+
+export default function Portfolio() {
+  const [activeSection, setActiveSection] = useState("home");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActiveSection(e.target.id)),
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+    ["home", "projects", "skills", "contact"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-term-bg text-term-text font-mono text-sm md:text-base">
       {/* Header */}
-      <header className="relative z-10 p-6 flex justify-between items-center backdrop-blur-sm">
-        <h1 className="text-2xl font-bold tracking-wide">✨ Tom Lelievre</h1>
-        <nav className="flex gap-6 items-center">
-          <a href="#skills" className="hover:text-purple-400 transition">Compétences</a>
-          <a href="#projects" className="hover:text-purple-400 transition">Projets</a>
-          <a href="#contact" className="hover:text-purple-400 transition">Contact</a>
-          {/* Bouton pour télécharger le CV */}
-          <a href="/cv.pdf"download className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg hover:scale-105 transition text-white font-medium">
-            <FaDownload /> CV
+      <header className="sticky top-0 z-50 border-b border-term-line bg-term-bg/90 backdrop-blur">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap gap-x-6 gap-y-2 justify-between items-center">
+          <a href="#home" className="font-semibold">
+            <span className="text-term-green">tom@lelievre</span>
+            <span className="text-term-dim">:</span>
+            <span className="text-term-blue">~</span>
+            <span className="text-term-dim">$</span>
           </a>
-        </nav>
+          <nav className="flex gap-4 md:gap-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                className={`transition hover:text-term-green ${activeSection === link.id ? "text-term-green" : "text-term-dim"}`}
+              >
+                ./{link.label}
+              </a>
+            ))}
+            <a href="/cv.pdf" download className="text-term-yellow hover:underline">
+              cv.pdf
+            </a>
+          </nav>
+        </div>
       </header>
 
-      {/* Hero avec photo + présentation */}
-      <section className="relative z-10 h-[85vh] flex flex-col items-center justify-center text-center px-4">
-        <motion.h2
-          className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          Bienvenue sur mon Portfolio 🚀
-        </motion.h2>
+      <main className="max-w-5xl mx-auto px-4">
+        {/* Hero */}
+        <section id="home" className="min-h-[calc(100vh-4rem)] flex items-center py-16">
+          <motion.div
+            className="w-full rounded-lg border border-term-line bg-term-panel shadow-2xl overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-term-line">
+              <span className="w-3 h-3 rounded-full bg-term-red" />
+              <span className="w-3 h-3 rounded-full bg-term-yellow" />
+              <span className="w-3 h-3 rounded-full bg-term-green" />
+              <span className="ml-3 text-xs text-term-dim">tom@lelievre: ~</span>
+            </div>
 
-        {/* Photo de profil */}
-        <motion.img
-          src={profilePicture}
-          alt="Photo de profil"
-          className="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-white shadow-lg mt-8 mb-6 object-cover"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.8 }}
-        />
+            <div className="p-6 md:p-10 flex flex-col-reverse md:flex-row gap-8 md:items-center">
+              <div className="flex-1 space-y-6">
+                <div>
+                  <Prompt cmd="whoami" />
+                  <h1 className="mt-2 text-3xl md:text-5xl font-extrabold text-white">Tom Lelievre</h1>
+                  <p className="text-term-green mt-1">Développeur · Alternant Infotel × Epitech</p>
+                </div>
 
-        {/* Texte de présentation */}
-        <motion.p
-          className="max-w-2xl text-lg md:text-xl text-gray-300 leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-        >
-          Je m'appelle <span className="font-bold text-white">Tom Lelievre</span>, j’ai 
-          <span className="text-purple-400"> 21 ans</span> et je suis actuellement étudiant en 
-          <span className="text-purple-400"> 3ᵉ année </span> de BUT Informatique à Lille.  
-          Passionné par les nouvelles technologies et le développement informatique,  
-          je suis actuellement à la recherche d’un 
-          <span className="text-green-400 font-semibold"> stage</span> afin de valider mon année, 
-          sur une période allant du 
-          <span className="text-green-400 font-semibold"> 16 mars au 3 juillet</span> 🚀.
-        </motion.p>
-      </section>
+                <div>
+                  <Prompt cmd="cat a_propos.txt" />
+                  <p className="mt-2 leading-relaxed max-w-2xl">
+                    21 ans. Après un <span className="text-term-blue">BUT Informatique</span> à Lille,
+                    je suis actuellement en <span className="text-term-green">alternance chez Infotel</span> et
+                    à <span className="text-term-green">Epitech</span>. Passionné par les nouvelles technologies et le développement.
+                  </p>
+                </div>
 
-      {/* Projects */}
-      <ProjectsSection /> 
+                <div>
+                  <Prompt cmd="ls liens/" />
+                  <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                    <a href="/cv.pdf" download className="text-term-yellow hover:underline">cv.pdf</a>
+                    <a href="https://github.com/lelievretom" target="_blank" rel="noopener noreferrer" className="text-term-blue hover:underline">github/</a>
+                    <a href="#projects" className="text-term-blue hover:underline">projets/</a>
+                    <a href="#contact" className="text-term-blue hover:underline">contact/</a>
+                  </div>
+                </div>
 
-      {/* Skills */}
-      <section
-        id="skills"
-        className="relative z-10 p-12 text-center bg-white/5 backdrop-blur-md rounded-2xl mx-6 md:mx-20 my-8 shadow-lg"
-      >
-        <h3 className="text-3xl font-bold mb-12">Compétences</h3>
-
-        {/* Hard Skills */}
-        <div className="mb-12">
-          <h4 className="text-2xl font-semibold mb-6 text-purple-400">💻 Hard Skills</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <Skill icon={<FaReact size={40} color="#61DBFB" />} name="React" />
-            <Skill icon={<FaPaintBrush size={40} />} name="Tailwind CSS" />
-            <Skill icon={<FaGithub size={40} />} name="Git / GitHub" />
-            <Skill icon={<FaChartBar size={40} />} name="Matomo" />
-            <Skill icon={<FaJava size={40} color="#f89820" />} name="Java" />
-            <Skill icon={<FaPython size={40} color="#3776AB" />} name="Python" />
-            <Skill icon={
-              <div className="flex gap-2">
-                <FaHtml5 size={40} color="#E34F26" />
-                <FaCss3 size={40} color="#1572B6" />
+                <p className="text-term-dim cursor">
+                  <span className="text-term-green">$</span>
+                </p>
               </div>
-            }name="HTML / CSS"/>
-            <Skill icon={<DiPostgresql size={40} color="#336791" />} name="PostgreSQL" />
-            <Skill icon={<SiKotlin size={40} color="#7F52FF" />} name="Kotlin" />
-            <Skill icon={<SiMongodb size={40} color="#47A248" />} name="MongoDB" />
-            <Skill icon={<SiSpring size={40} color="#6DB33F" />} name="Spring" />
+
+              <img
+                src={profilePicture}
+                alt="Photo de Tom Lelievre"
+                className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-cover border border-term-line grayscale hover:grayscale-0 transition duration-500"
+              />
+            </div>
+          </motion.div>
+        </section>
+
+        <ProjectsSection />
+
+        {/* Skills */}
+        <section id="skills" className="py-16 scroll-mt-16">
+          <SectionTitle cmd="ls ~/competences" />
+
+          <p className="text-term-dim mb-4"># hard skills</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+            {hardSkills.map((s) => (
+              <a
+                key={s.name}
+                href={s.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`Documentation ${s.name}`}
+                className="flex items-center gap-3 px-4 py-3 rounded border border-term-line bg-term-panel hover:border-term-green transition"
+              >
+                <span className="flex gap-1 text-xl">{s.icon}</span>
+                <span>{s.name}</span>
+              </a>
+            ))}
           </div>
-        </div>
 
-        {/* Soft Skills */}
-        <div>
-          <h4 className="text-2xl font-semibold mb-6 text-pink-400">🤝 Soft Skills</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <Skill icon={<span className="text-3xl">💬</span>} name="Communication" />
-            <Skill icon={<span className="text-3xl">👥</span>} name="Travail en équipe" />
-            <Skill icon={<span className="text-3xl">🧩</span>} name="Résolution de problèmes" />
-            <Skill icon={<span className="text-3xl">⏳</span>} name="Gestion du temps" />
-          </div>
-        </div>
-      </section>
+          <p className="text-term-dim mb-4"># soft skills</p>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {softSkills.map((s) => (
+              <li key={s}>
+                <span className="text-term-green">✓</span> {s}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      {/* Contact */}
-      <ContactForm />
+        <ContactForm />
+      </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 p-6 text-center text-gray-400 text-sm">
-        © {new Date().getFullYear()} Tom Lelievre — Tous droits réservés.
+      <footer className="border-t border-term-line py-6 text-center text-term-dim text-xs">
+        © {new Date().getFullYear()} Tom Lelievre — <span className="text-term-green">exit 0</span>
       </footer>
     </div>
   );
 }
 
-/* --- Composants réutilisables --- */
-function Skill({ icon, name }) {
+function Prompt({ cmd }) {
   return (
-    <motion.div
-      className="flex flex-col items-center gap-2 p-4 bg-white/10 rounded-xl shadow hover:shadow-purple-500/30 transition"
-      whileHover={{ scale: 1.1 }}
-    >
-      {icon}
-      <span>{name}</span>
-    </motion.div>
+    <p>
+      <span className="text-term-green">$</span> <span className="text-white">{cmd}</span>
+    </p>
   );
 }

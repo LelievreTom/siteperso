@@ -1,38 +1,40 @@
 @import "tailwindcss";
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-term-bg: #0b0e14;
+  --color-term-panel: #11151c;
+  --color-term-line: #262c36;
+  --color-term-text: #c9d1d9;
+  --color-term-dim: #6e7681;
+  --color-term-green: #7ee787;
+  --color-term-blue: #79c0ff;
+  --color-term-yellow: #e3b341;
+  --color-term-red: #ff7b72;
+
+  /* Partie SCP : dossier classifié */
+  --font-typewriter: "Special Elite", "Courier New", monospace;
+  --color-dossier-paper: #f1ebdd;
+  --color-dossier-ink: #1c1a16;
+  --color-dossier-red: #8b1a1a;
 }
 
-.animate-fadeIn {
-  animation: fadeIn 1s ease forwards;
-}
-.animate-fadeIn.delay-200 { animation-delay: 0.2s; }
-.animate-fadeIn.delay-400 { animation-delay: 0.4s; }
-.animate-fadeIn.delay-600 { animation-delay: 0.6s; }
-
-.slow-spin {
-  animation: spin 4s linear infinite;
+html {
+  scroll-behavior: smooth;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px); 
-  }
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.cursor::after {
+  content: "▋";
+  margin-left: 2px;
+  color: var(--color-term-green);
+  animation: blink 1s steps(1) infinite;
 }
 
-/* Découpe des triangles pour donner l'effet ruban */
-.clip-triangle-left {
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.clip-triangle-right {
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor::after { animation: none; }
 }
