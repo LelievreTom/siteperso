@@ -5,8 +5,12 @@ const scpRoutes = require("./routes/scpRoutes");
 require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 
 const app = express();
+const PORT = process.env.PORT || 5000; // Render impose son port via PORT
 
-app.use(cors());
+// Seuls ces sites peuvent appeler l'API depuis un navigateur
+app.use(cors({
+  origin: ["https://tomlelievre.fr", "https://www.tomlelievre.fr", "http://localhost:5173", "http://localhost:4173"],
+}));
 app.use(express.json());
 app.use("/scp", scpRoutes);
 
@@ -18,7 +22,7 @@ app.get("/", (req, res) => {
   res.send("API SCP active");
 });
 
-app.listen(5000, (err) => {
-  if (err) throw err; // ex: port 5000 déjà utilisé
-  console.log("Serveur lancé sur port 5000");
+app.listen(PORT, (err) => {
+  if (err) throw err; // ex: port déjà utilisé
+  console.log(`Serveur lancé sur port ${PORT}`);
 });
