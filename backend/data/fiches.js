@@ -1,10 +1,10 @@
 // Contenu des dossiers SCP (fiction originale). Utilisé par backend/seed.js.
 // [[texte]] = passage caviardé. Dans les annexes, une ligne « Nom : réplique » est mise en forme comme un dialogue.
-// Images : fichiers dans public/scp/photos (photos) et public/scp/plans (plans SVG).
+// Images : fichiers dans public/images/scp/photos (photos) et public/images/scp/plans (plans SVG).
 
 const img = (numero, legendePhoto, legendePlan) => [
-  { type: "photo", src: `/scp/photos/${numero}.jpg`, legende: legendePhoto },
-  { type: "plan", src: `/scp/plans/${numero}.svg`, legende: legendePlan },
+  { type: "photo", src: `/images/scp/photos/${numero}.jpg`, legende: legendePhoto },
+  { type: "plan", src: `/images/scp/plans/${numero}.svg`, legende: legendePlan },
 ];
 
 module.exports = [

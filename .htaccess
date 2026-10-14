@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# Ne jamais afficher le contenu d'un dossier (page « Index of »)
+Options -Indexes
+
 # Forcer HTTPS
 RewriteCond %{ENV:HTTPS} !on
 RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
