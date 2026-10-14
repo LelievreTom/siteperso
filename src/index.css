@@ -11,6 +11,12 @@
   --color-term-blue: #79c0ff;
   --color-term-yellow: #e3b341;
   --color-term-red: #ff7b72;
+
+  /* Partie SCP : dossier classifié */
+  --font-typewriter: "Special Elite", "Courier New", monospace;
+  --color-dossier-paper: #f1ebdd;
+  --color-dossier-ink: #1c1a16;
+  --color-dossier-red: #8b1a1a;
 }
 
 html {

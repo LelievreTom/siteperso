@@ -18,4 +18,7 @@ app.get("/", (req, res) => {
   res.send("API SCP active");
 });
 
-app.listen(5000, () => console.log("Serveur lancé sur port 5000"));
+app.listen(5000, (err) => {
+  if (err) throw err; // ex: port 5000 déjà utilisé
+  console.log("Serveur lancé sur port 5000");
+});
