@@ -8,5 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: "./",
+  base: "/", // chemins absolus : sinon /scp/173 cherche ses fichiers dans /scp/assets
 })
